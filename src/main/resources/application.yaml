@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: inventory
+  datasource:
+    url: jdbc:postgresql://localhost:5432/inventory
+    username: postgres
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
