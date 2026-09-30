@@ -6,8 +6,6 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.management.relation.Role;
-
 @Entity
 @Getter
 @Setter
