@@ -18,7 +18,7 @@ public class UserService {
     public User ceateUser(User user){
        return  userRepository.save(user);
     }
-    public List<User> getAllUsers(User user){
+    public List<User> getAllUsers(){
         return userRepository.findAll();
     }
    public User findById(Long id){
