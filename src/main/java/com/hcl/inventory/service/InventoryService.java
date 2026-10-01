@@ -26,16 +26,26 @@ public class InventoryService {
     }
 
     public List<Inventory> getStockByWarehouse(Long warehouseId) {
-        return inventoryRepository.findByWarehouseId(warehouseId);
+        return inventoryRepository.findByWarehouse_Id(warehouseId);
     }
 
     public List<Inventory> getStockByProduct(Long productId) {
-        return inventoryRepository.findByProductId(productId);
+        return inventoryRepository.findByProduct_Id(productId);
     }
 
     public Inventory getInventoryById(Long id) {
         return inventoryRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Inventory record not found with id: " + id));
+    }
+
+    // Read-only check: how much of this product is available in this
+    // warehouse right now. Returns 0 if there's no inventory row at all,
+    // rather than throwing — "no record" and "zero stock" mean the same
+    // thing to a caller deciding whether an order can be fulfilled.
+    public int getAvailableQuantity(Long productId, Long warehouseId) {
+        return inventoryRepository.findByProduct_IdAndWarehouse_Id(productId, warehouseId)
+                .map(Inventory::getQuantity)
+                .orElse(0);
     }
 
     // Creates the initial stock record for a product in a warehouse.
@@ -45,7 +55,7 @@ public class InventoryService {
         if (inventory.getProductId() == null || inventory.getWarehouseId() == null) {
             throw new IllegalArgumentException("productId and warehouseId are required");
         }
-        if (inventoryRepository.existsByProductIdAndWarehouseId(inventory.getProductId(), inventory.getWarehouseId())) {
+        if (inventoryRepository.existsByProduct_IdAndWarehouse_Id(inventory.getProductId(), inventory.getWarehouseId())) {
             throw new IllegalArgumentException("Inventory already exists for this product in this warehouse — use update instead");
         }
 
@@ -72,7 +82,7 @@ public class InventoryService {
     // product has never been stocked in that warehouse before.
     @Transactional
     public Inventory adjustQuantity(Long productId, Long warehouseId, int delta) {
-        Inventory inventory = inventoryRepository.findByProductIdAndWarehouseId(productId, warehouseId)
+        Inventory inventory = inventoryRepository.findByProduct_IdAndWarehouse_Id(productId, warehouseId)
                 .orElseThrow(() -> new EntityNotFoundException(
                         "No inventory record for product " + productId + " in warehouse " + warehouseId));
         return applyDelta(inventory, delta);
@@ -80,11 +90,11 @@ public class InventoryService {
 
     // Same as adjustQuantity(), but creates a new inventory row (starting
     // from 0) if one doesn't exist yet, instead of throwing. Used by
-    // StockMovement for IN / TRANSFER movements, where a warehouse may be
-    // receiving a given product for the very first time.
+    // StockMovement (IN) and PurchaseOrder receiving, where a warehouse may
+    // be receiving a given product for the very first time.
     @Transactional
     public Inventory adjustOrCreateQuantity(Long productId, Long warehouseId, int delta) {
-        Inventory inventory = inventoryRepository.findByProductIdAndWarehouseId(productId, warehouseId)
+        Inventory inventory = inventoryRepository.findByProduct_IdAndWarehouse_Id(productId, warehouseId)
                 .orElseGet(() -> {
                     Inventory fresh = new Inventory();
                     fresh.setProduct(resolveProduct(productId));

@@ -30,7 +30,7 @@ public class Product {
     @Column(unique = true)
     private String sku;
 
-    @NotBlank
+    @NotNull
     @PositiveOrZero
     private BigDecimal price;
 

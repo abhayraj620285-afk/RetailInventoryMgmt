@@ -2,33 +2,47 @@ package com.hcl.inventory.controller;
 
 import com.hcl.inventory.model.User;
 import com.hcl.inventory.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/api/users")
 @RequiredArgsConstructor
 public class UserController {
 
-    private UserService userService;
+    private final UserService userService;
+
     @GetMapping
-    public List<User> getAllUsers(){
-        return userService.getAllUsers();
-    }
-    @GetMapping("/{id}")
-    public User findById(@PathVariable Long id){
-        return userService.findById(id);
-    }
-    @DeleteMapping("/{id}")
-    public String deleteById(@PathVariable Long id) {
-        userService.deleteById(id);
-        return "User deleted successfully";
-    }
-    @PutMapping("/{id}")
-    public User updateById( @PathVariable Long id, @RequestBody User user){
-        return userService.updateById(id, user);
+    public ResponseEntity<List<User>> getAllUsers() {
+        return ResponseEntity.ok(userService.getAllUsers());
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<User> getUserById(@PathVariable Long id) {
+        return ResponseEntity.ok(userService.getUserById(id));
+    }
+
+    // Real login (with a JWT returned) comes with the security layer later.
+    // This just creates the account.
+    @PostMapping("/register")
+    public ResponseEntity<User> registerUser(@Valid @RequestBody User user) {
+        User saved = userService.registerUser(user);
+        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<User> updateUser(@PathVariable Long id, @Valid @RequestBody User user) {
+        return ResponseEntity.ok(userService.updateUser(id, user));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+        userService.deleteUser(id);
+        return ResponseEntity.noContent().build();
+    }
 }

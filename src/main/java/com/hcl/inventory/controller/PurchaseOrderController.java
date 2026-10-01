@@ -32,15 +32,6 @@ public class PurchaseOrderController {
         return ResponseEntity.ok(purchaseOrderService.getOrderById(id));
     }
 
-    // Body example:
-    // {
-    //   "supplierId": 1,
-    //   "warehouseId": 2,
-    //   "items": [
-    //     {"productId": 3, "quantity": 50, "unitCost": 120.00},
-    //     {"productId": 4, "quantity": 20, "unitCost": 75.50}
-    //   ]
-    // }
     @PostMapping
     public ResponseEntity<PurchaseOrder> createOrder(@Valid @RequestBody PurchaseOrder order) {
         PurchaseOrder saved = purchaseOrderService.createOrder(order);
@@ -52,7 +43,6 @@ public class PurchaseOrderController {
         return ResponseEntity.ok(purchaseOrderService.markAsOrdered(id));
     }
 
-    // Adds the stock to the order's warehouse and marks it RECEIVED.
     @PatchMapping("/{id}/mark-received")
     public ResponseEntity<PurchaseOrder> markAsReceived(@PathVariable Long id) {
         return ResponseEntity.ok(purchaseOrderService.markAsReceived(id));

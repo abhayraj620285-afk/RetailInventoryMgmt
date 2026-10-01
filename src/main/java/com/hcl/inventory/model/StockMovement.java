@@ -28,12 +28,10 @@ public class StockMovement {
     @JoinColumn(name = "product_id")
     private Product product;
 
-    // Only set for OUT and TRANSFER movements.
     @ManyToOne
     @JoinColumn(name = "from_warehouse_id")
     private Warehouse fromWarehouse;
 
-    // Only set for IN and TRANSFER movements.
     @ManyToOne
     @JoinColumn(name = "to_warehouse_id")
     private Warehouse toWarehouse;
@@ -48,11 +46,6 @@ public class StockMovement {
 
     private LocalDateTime timestamp;
 
-    // Transient fields: used only to receive ids from incoming JSON, e.g.
-    // {"productId": 1, "fromWarehouseId": 2, "toWarehouseId": 3,
-    //  "quantity": 10, "type": "TRANSFER"}
-    // The service layer reads these, resolves the real entities, and sets
-    // them above.
     @Transient
     private Long productId;
 

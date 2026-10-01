@@ -29,7 +29,7 @@ public class StockMovementService {
     }
 
     public List<StockMovement> getMovementsByProduct(Long productId) {
-        return stockMovementRepository.findByProductId(productId);
+        return stockMovementRepository.findByProduct_Id(productId);
     }
 
     public StockMovement getMovementById(Long id) {
