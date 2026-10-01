@@ -2,14 +2,15 @@ spring:
   application:
     name: inventory
   datasource:
-    url: jdbc:postgresql://localhost:5432/inventory
-    username: postgres
-    password:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/inventory}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:}
   jpa:
     hibernate:
-      ddl-auto: update
-    show-sql: true
-jwt:
-  secret: "dlRQWJrpkt71ooEzYwMiCxhWN5ntDcTUPQwj1xGL4Hw="
-  expiration-ms: 86400000
+      ddl-auto: ${DDL_AUTO:update}
+    show-sql: ${SHOW_SQL:true}
 
+jwt:
+  # No default on purpose: the app refuses to start unless JWT_SECRET is set.
+  secret: ${JWT_SECRET}
+  expiration-ms: ${JWT_EXPIRATION_MS:86400000}
